@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "secretary",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-28",
+  "workers_dev": true,
+  "vars": {
+    "OPENAI_MODEL": "gpt-4.1-mini",
+    "ALLOWED_ORIGINS": "https://danilostoletovic.com,https://www.danilostoletovic.com",
+    "OPENAI_TIMEOUT_MS": "20000",
+    "OPENAI_MAX_OUTPUT_TOKENS": "400"
+  },
+  "ratelimits": [
+    {
+      "name": "CHAT_RATE_LIMITER",
+      "namespace_id": "1001",
+      "simple": { "limit": 10, "period": 60 }
+    }
+  ]
+}

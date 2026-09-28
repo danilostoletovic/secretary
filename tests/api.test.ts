@@ -1,0 +1,135 @@
+import { describe, expect, test } from 'bun:test';
+import { handleRequest } from '../src/index';
+import type { Env } from '../src/config/env';
+import { MAX_BODY_BYTES } from '../src/lib/body';
+import type { Fetcher } from '../src/lib/openai';
+
+const env: Env = {
+  OPENAI_API_KEY: 'unit-test-only-not-a-real-key',
+  CHAT_RATE_LIMITER: { limit: async () => ({ success: true }) },
+};
+const origin = 'https://danilostoletovic.com';
+const completed = (text = 'I can help with that.') => Response.json({ status: 'completed', output: [{
+  type: 'message', content: [{ type: 'output_text', text }],
+}] });
+const unused: Fetcher = async () => { throw new Error('Unexpected OpenAI call'); };
+function request(body: unknown = { message: 'Can Danilo build a website?' }, headers: Record<string, string> = {}) {
+  return new Request('https://secretary.example/chat', { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: origin, ...headers }, body: JSON.stringify(body) });
+}
+
+describe('routing and CORS', () => {
+  test('health needs no key, limiter, or OpenAI', async () => {
+    const response = await handleRequest(new Request('https://example.com/health'), {}, unused);
+    expect(await response.json<unknown>()).toEqual({ status: 'ok', service: 'secretary' });
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff');
+  });
+  test('unknown route and wrong method', async () => {
+    expect((await handleRequest(new Request('https://example.com/nope'), {}, unused)).status).toBe(404);
+    const response = await handleRequest(new Request('https://example.com/chat'), {}, unused);
+    expect(response.status).toBe(405);
+    expect(response.headers.get('Allow')).toBe('POST, OPTIONS');
+  });
+  test('exact origin checks block suffixes, null, and foreign sites', async () => {
+    for (const bad of ['https://evil.example', `${origin}.evil.example`, 'null']) {
+      const response = await handleRequest(request({}, { Origin: bad }), env, unused);
+      expect(response.status).toBe(403);
+      expect(response.headers.has('Access-Control-Allow-Origin')).toBe(false);
+    }
+  });
+  test('preflight works without calling OpenAI', async () => {
+    const response = await handleRequest(new Request('https://example.com/chat', { method: 'OPTIONS', headers: {
+      Origin: origin, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'content-type',
+    } }), {}, unused);
+    expect(response.status).toBe(204);
+    expect(response.headers.get('Access-Control-Allow-Origin')).toBe(origin);
+  });
+  test('rejects unapproved preflight headers', async () => {
+    expect((await handleRequest(new Request('https://example.com/chat', { method: 'OPTIONS', headers: {
+      Origin: origin, 'Access-Control-Request-Method': 'POST', 'Access-Control-Request-Headers': 'authorization',
+    } }), env, unused)).status).toBe(403);
+  });
+  test('server-to-server requests may omit Origin', async () => {
+    const req = request(); req.headers.delete('Origin');
+    expect((await handleRequest(req, env, async () => completed())).status).toBe(200);
+  });
+});
+
+describe('validation and rate limiting', () => {
+  test('rejects empty, wrong-type, oversized messages and extra fields', async () => {
+    for (const body of [{}, null, [], { message: '' }, { message: ' \n ' }, { message: 12 }, { message: 'x'.repeat(2001) }, { message: 'hello', role: 'system' }]) {
+      const response = await handleRequest(request(body), env, unused);
+      expect(response.status).toBe(400);
+      expect(response.headers.get('Access-Control-Allow-Origin')).toBe(origin);
+    }
+  });
+  test('invalid JSON and media types', async () => {
+    expect((await handleRequest(new Request('https://example.com/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{' }), env, unused)).status).toBe(400);
+    expect((await handleRequest(request({}, { 'Content-Type': 'text/plain' }), env, unused)).status).toBe(415);
+    expect((await handleRequest(request({}, { 'Content-Encoding': 'gzip' }), env, unused)).status).toBe(415);
+  });
+  test('bounds actual bytes even without Content-Length', async () => {
+    expect((await handleRequest(request({ message: 'x'.repeat(MAX_BODY_BYTES) }), env, unused)).status).toBe(413);
+    expect((await handleRequest(request({}, { 'Content-Length': String(MAX_BODY_BYTES + 1) }), env, unused)).status).toBe(413);
+  });
+  test('rate limits before upstream and returns Retry-After', async () => {
+    const response = await handleRequest(request(), { ...env, CHAT_RATE_LIMITER: { limit: async ({ key }) => {
+      expect(key).toBe('chat:unknown'); return { success: false };
+    } } }, unused);
+    expect(response.status).toBe(429);
+    expect(response.headers.get('Retry-After')).toBe('60');
+  });
+  test('missing or broken limiter fails closed', async () => {
+    expect((await handleRequest(request(), {}, unused)).status).toBe(503);
+    expect((await handleRequest(request(), { ...env, CHAT_RATE_LIMITER: { limit: async () => { throw new Error('private'); } } }, unused)).status).toBe(503);
+  });
+  test('missing key and invalid environment are sanitized', async () => {
+    for (const config of [{ ...env, OPENAI_API_KEY: '' }, { ...env, OPENAI_TIMEOUT_MS: 'NaN' }, { ...env, ALLOWED_ORIGINS: '*' }]) {
+      const response = await handleRequest(request(), config, unused);
+      expect(response.status).toBe(503);
+      expect(await response.text()).not.toContain('unit-test-only');
+    }
+  });
+});
+
+describe('OpenAI integration', () => {
+  test('sends configured model, separate instructions and trimmed user input; returns only reply', async () => {
+    const response = await handleRequest(request({ message: '  Hello  ' }), { ...env, OPENAI_MODEL: 'configured-model' }, async (url, init) => {
+      expect(url).toBe('https://api.openai.com/v1/responses');
+      expect(new Headers(init?.headers).get('Authorization')).toBe(`Bearer ${env.OPENAI_API_KEY}`);
+      const body = JSON.parse(String(init?.body));
+      expect(body.model).toBe('configured-model');
+      expect(body.input).toEqual([{ role: 'user', content: 'Hello' }]);
+      expect(body.instructions).toContain('Danilo');
+      expect(body.store).toBe(false);
+      expect(body.max_output_tokens).toBe(400);
+      return completed();
+    });
+    expect(response.status).toBe(200);
+    expect(await response.json<unknown>()).toEqual({ reply: 'I can help with that.' });
+  });
+  test('sanitizes upstream failures', async () => {
+    for (const [upstream, expected] of [[401, 502], [400, 502], [429, 503], [500, 503]] as const) {
+      const response = await handleRequest(request(), env, async () => new Response('secret upstream detail', { status: upstream }));
+      expect(response.status).toBe(expected);
+      expect(await response.text()).not.toContain('secret upstream detail');
+    }
+    expect((await handleRequest(request(), env, async () => { throw new Error('secret network detail'); })).status).toBe(502);
+  });
+  test('rejects malformed, empty and incomplete responses', async () => {
+    for (const value of [{}, { status: 'completed', output: [] }, { status: 'incomplete', output: [] }]) {
+      expect((await handleRequest(request(), env, async () => Response.json(value))).status).toBe(502);
+    }
+    expect((await handleRequest(request(), env, async () => new Response('invalid JSON'))).status).toBe(502);
+  });
+  test('returns refusal text cleanly', async () => {
+    const response = await handleRequest(request(), env, async () => Response.json({ status: 'completed', output: [{ type: 'message', content: [{ type: 'refusal', refusal: 'I cannot help with that.' }] }] }));
+    expect(await response.json<unknown>()).toEqual({ reply: 'I cannot help with that.' });
+  });
+  test('aborts timed-out requests', async () => {
+    const response = await handleRequest(request(), { ...env, OPENAI_TIMEOUT_MS: '100' }, async (_url, init) => new Promise<Response>((_resolve, reject) => {
+      init?.signal?.addEventListener('abort', () => reject(new Error('aborted')), { once: true });
+    }));
+    expect(response.status).toBe(504);
+  });
+});
