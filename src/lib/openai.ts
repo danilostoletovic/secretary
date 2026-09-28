@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import type { OpenAIConfig } from '../config/env';
-import { secretaryInstructions } from '../config/personality';
 import { HttpError } from './http';
 
 export type Fetcher = (url: string, init: RequestInit) => Promise<Response>;
@@ -13,7 +12,7 @@ const responseSchema = z.object({
   })),
 });
 
-export async function askOpenAI(message: string, config: OpenAIConfig, fetcher: Fetcher = fetch): Promise<string> {
+export async function askOpenAI(message: string, instructions: string, config: OpenAIConfig, fetcher: Fetcher = fetch): Promise<string> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.OPENAI_TIMEOUT_MS);
   try {
@@ -22,7 +21,7 @@ export async function askOpenAI(message: string, config: OpenAIConfig, fetcher: 
       headers: { Authorization: `Bearer ${config.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: config.OPENAI_MODEL,
-        instructions: secretaryInstructions,
+        instructions,
         input: [{ role: 'user', content: message }],
         max_output_tokens: config.OPENAI_MAX_OUTPUT_TOKENS,
         store: false,

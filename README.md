@@ -4,7 +4,7 @@
 
 A small, standalone Cloudflare Worker that answers questions about Danilo’s work and portfolio. Built for `danilostoletovic.com`, consumable by any approved website. No frontend, database, conversation storage, or unnecessary filing cabinets.
 
-Each chat request combines a separately maintained personality and public knowledge file with the visitor’s message, calls OpenAI, and returns a plain-text reply in JSON. Requests are independent: there is no conversation history or ability to send messages or book meetings.
+Each chat request combines separately maintained instructions and curated public knowledge with the visitor’s message, calls OpenAI, and returns a plain-text reply in JSON. Requests are independent: there is no conversation history or ability to send messages or book meetings.
 
 ## Architecture
 
@@ -42,11 +42,11 @@ curl http://localhost:8787/chat \
   -d '{"message":"Can Danilo build me a website?"}'
 ```
 
-Illustrative response (wording varies; the initial knowledge intentionally does not assert services):
+Illustrative response (wording varies):
 
 ```json
 {
-  "reply": "I don’t have Danilo’s confirmed service list yet. You can explore his portfolio at https://danilostoletovic.com."
+  "reply": "Yes, Danilo offers web development. Share what you’re building, or use the contact method on his portfolio to discuss scope and availability."
 }
 ```
 
@@ -156,10 +156,18 @@ Render replies as text (`textContent`), not raw HTML. Never send an OpenAI key f
 
 ## Editing the secretary
 
-- `src/config/personality.ts`: tone, scope, honesty, and behavior instructions.
-- `src/knowledge/danilo.ts`: about, services, technologies, projects, contact, and FAQs. Replace TODOs and nulls with approved public information. Empty entries mean unknown. The initial knowledge contains only Danilo’s supplied name and portfolio URL.
+- `src/knowledge/profile.md`: approved biography, focus areas, working style, and portfolio/contact guidance.
+- `src/knowledge/services.json`: offered services. Add an entry with a stable unique kebab-case `id`, `name`, `description`, and boolean `available`. Availability here means offered, not immediate capacity or a scheduling commitment.
+- `src/knowledge/projects.json`: verified projects. Each entry has a stable unique `id`, `name`, `description`, `technologies`, `features`, and `links` (objects with `label` and HTTP(S) `url`). Keep empty arrays when details are unknown. SmartVehicle has no verified URL in this repository, so its links are empty.
+- `src/knowledge/policies.md`: identity, honesty, tone, contact, and prompt-injection rules.
 
-Knowledge is serialized into the instructions at build time. Redeploy after changes. Do not put private information or secrets in either file. There is no RAG, vector database, or model tool access.
+Keep facts concise and public. Do not add credentials, private client information, personal addresses, tokens, environment variables, or server configuration. Both JSON documents use `schemaVersion: 1`; update the schema in `src/knowledge/loader.ts` deliberately if adding fields. Do not duplicate project facts in prompts. Run `bun run check` and `bun run deploy:check` after edits, then redeploy.
+
+Wrangler bundles Markdown as server-side text modules and JSON as code; these files are not public assets. `getAllKnowledge()` validates the bundled data with Zod on first use and caches an immutable result per Worker instance. Invalid structure fails closed with a sanitized 503 before any OpenAI call. Invalid JSON syntax fails the build. No runtime filesystem or database is needed.
+
+The route calls `retrieveKnowledge(userQuery)` and passes the result to `buildSystemPrompt(knowledge)` in `src/lib/prompt.ts`. The builder combines base scope/capability instructions from `src/config/personality.ts`, profile, compact JSON services/projects, and policies. The OpenAI client receives these as `instructions`; the visitor message stays in a separate user-role input. The strict API accepts only `message`, never client-supplied knowledge or instructions.
+
+For future RAG, replace the implementation of `retrieveKnowledge` with query-based selection returning the same `Knowledge` shape. Always retain the trusted profile and policies; only select relevant public facts. Stable record IDs and versioned JSON make migration easier. The HTTP API and OpenAI client need no retrieval-specific changes. There is currently no RAG, embeddings, vector database, or model tool access. Tests verify instruction separation, not a guarantee that a model will resist every prompt injection.
 
 ## Project structure
 
@@ -170,10 +178,17 @@ src/
   lib/body.ts              Bounded JSON body reader
   lib/http.ts              JSON errors and security headers
   lib/openai.ts            Responses API call, timeout, and reply parsing
+  lib/prompt.ts            Trusted system prompt construction
   config/env.ts            Environment validation
   config/personality.ts    Secretary instructions
-  knowledge/danilo.ts      Editable public knowledge
+  knowledge/profile.md    Editable public profile
+  knowledge/services.json Editable service records
+  knowledge/projects.json Editable project records
+  knowledge/policies.md   Secretary behavior and trust rules
+  knowledge/loader.ts     Validation, cache, and future retrieval seam
+  knowledge/text.d.ts     Markdown import typing
 tests/api.test.ts          Automated tests with mocked OpenAI
+tests/knowledge.test.ts    Knowledge validation and prompt tests
 .dev.vars.example          Local secret/config example
 wrangler.jsonc             Worker configuration and rate-limit binding
 ```

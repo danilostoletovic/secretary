@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "projects": [
+    {
+      "id": "smartvehicle",
+      "name": "SmartVehicle",
+      "description": "Open-source Edge AI autonomous vehicle project with a reproducible deployment approach.",
+      "technologies": ["Raspberry Pi 5", "YOLO", "IMX219 camera", "Docker", "Flutter"],
+      "features": ["Real-time object detection and computer vision", "Autonomous following", "MJPEG camera streaming", "HTTP/API-based control", "Dockerized backend", "Multiplatform Flutter client"],
+      "links": []
+    },
+    {
+      "id": "secretary",
+      "name": "Secretary",
+      "description": "AI assistant integrated with Danilo's portfolio that helps visitors understand his projects, services, technical experience, and whether his skills may fit their project.",
+      "technologies": ["TypeScript", "Cloudflare Workers", "OpenAI Responses API", "Bun", "Zod"],
+      "features": ["Portfolio questions and potential-client guidance", "Server-side curated public knowledge", "Stateless chat API"],
+      "links": [{ "label": "Portfolio", "url": "https://danilostoletovic.com" }]
+    }
+  ]
+}

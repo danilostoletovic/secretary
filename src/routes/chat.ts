@@ -3,6 +3,8 @@ import { parseOpenAIConfig, type Env } from '../config/env';
 import { MAX_MESSAGE_LENGTH, readJson } from '../lib/body';
 import { HttpError, json } from '../lib/http';
 import { askOpenAI, type Fetcher } from '../lib/openai';
+import { retrieveKnowledge } from '../knowledge/loader';
+import { buildSystemPrompt } from '../lib/prompt';
 
 const inputSchema = z.object({ message: z.string().trim().min(1).max(MAX_MESSAGE_LENGTH) }).strict();
 
@@ -22,5 +24,8 @@ export async function chat(request: Request, env: Env, fetcher: Fetcher): Promis
   let config;
   try { config = parseOpenAIConfig(env); }
   catch { throw new HttpError(503, 'service_unavailable', 'The secretary is not configured yet.'); }
-  return json({ reply: await askOpenAI(input.data.message, config, fetcher) });
+  let instructions;
+  try { instructions = buildSystemPrompt(await retrieveKnowledge(input.data.message)); }
+  catch { throw new HttpError(503, 'service_unavailable', 'The secretary is not configured yet.'); }
+  return json({ reply: await askOpenAI(input.data.message, instructions, config, fetcher) });
 }

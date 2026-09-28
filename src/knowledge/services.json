@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "services": [
+    { "id": "web-development", "name": "Web Development", "description": "Building websites and web applications.", "available": true },
+    { "id": "ai-integration", "name": "AI Integration", "description": "Integrating AI capabilities into software and workflows.", "available": true },
+    { "id": "automation", "name": "Automation", "description": "Automating repetitive tasks and connecting workflows.", "available": true },
+    { "id": "apis-backend", "name": "APIs / Backend Development", "description": "Building APIs and backend services.", "available": true },
+    { "id": "custom-software", "name": "Custom Software / Prototyping", "description": "Developing custom software and practical prototypes.", "available": true }
+  ]
+}

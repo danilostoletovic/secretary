@@ -4,6 +4,7 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-09-28",
   "workers_dev": true,
+  "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
   "vars": {
     "OPENAI_MODEL": "gpt-4.1-mini",
     "ALLOWED_ORIGINS": "https://danilostoletovic.com,https://www.danilostoletovic.com",
