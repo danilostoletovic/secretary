@@ -3,19 +3,43 @@
   "projects": [
     {
       "id": "smartvehicle",
-      "name": "SmartVehicle",
-      "description": "Open-source Edge AI autonomous vehicle project with a reproducible deployment approach.",
-      "technologies": ["Raspberry Pi 5", "YOLO", "IMX219 camera", "Docker", "Flutter"],
-      "features": ["Real-time object detection and computer vision", "Autonomous following", "MJPEG camera streaming", "HTTP/API-based control", "Dockerized backend", "Multiplatform Flutter client"],
-      "links": []
+      "name": "YOLO Smart Vehicle",
+      "description": "Raspberry Pi 5 vehicle with YOLO computer vision, motor control, live video and telemetry, controlled through a custom Android app.",
+      "technologies": ["Python", "Raspberry Pi 5", "YOLO", "Kotlin", "Jetpack Compose", "Docker"],
+      "features": ["30 FPS camera feed and on-device detection; the camera frame rate is not a claim of 30 FPS inference", "Separate camera capture, inference, and motor control so busy vision processing does not hold up the vehicle", "Live video and telemetry", "4th place and Special Award at the 10th Galaksija Cup National STEM Championship"],
+      "links": [{ "label": "Project", "url": "https://yoloprojekat.com" }, { "label": "Android source", "url": "https://github.com/yoloprojekat/android-client" }]
+    },
+    {
+      "id": "class-timetable",
+      "name": "Class Timetable",
+      "description": "Open-source cross-platform scheduling app for students and educators.",
+      "technologies": ["Flutter", "Dart", "Material 3"],
+      "features": ["Academic scheduling across platforms"],
+      "links": [{ "label": "Source", "url": "https://github.com/danilostoletovic/class-timetable" }]
+    },
+    {
+      "id": "promptui",
+      "name": "PromptUI",
+      "description": "Lightweight interface for working with AI across different tasks; an evolving experiment currently described as in beta.",
+      "technologies": ["TypeScript"],
+      "features": ["Experimental AI interactions", "In beta"],
+      "links": [{ "label": "Source", "url": "https://github.com/danilostoletovic/PromptUI" }]
+    },
+    {
+      "id": "portfolio",
+      "name": "Personal Portfolio",
+      "description": "Personal website built with semantic HTML and vanilla CSS, plus a small optional JavaScript Secretary interface. Portfolio content remains readable without JavaScript.",
+      "technologies": ["HTML", "CSS", "JavaScript", "Cloudflare Pages", "Tor"],
+      "features": ["Public-web deployment and a separately hosted Tor .onion mirror; no mirror address supplied", "Markdown portfolio and machine-readable discovery resources", "Responsive light and dark themes"],
+      "links": [{ "label": "Website", "url": "https://danilostoletovic.com/" }, { "label": "Source", "url": "https://github.com/danilostoletovic/portfolio" }]
     },
     {
       "id": "secretary",
       "name": "Secretary",
       "description": "AI assistant integrated with Danilo's portfolio that helps visitors understand his projects, services, technical experience, and whether his skills may fit their project.",
       "technologies": ["TypeScript", "Cloudflare Workers", "OpenAI Responses API", "Bun", "Zod"],
-      "features": ["Portfolio questions and potential-client guidance", "Server-side curated public knowledge", "Stateless chat API"],
-      "links": [{ "label": "Portfolio", "url": "https://danilostoletovic.com" }]
+      "features": ["Portfolio questions and potential-client guidance", "Server-side curated public knowledge", "Stateless chat API; each question is answered independently"],
+      "links": [{ "label": "Portfolio", "url": "https://danilostoletovic.com/" }]
     }
   ]
 }
