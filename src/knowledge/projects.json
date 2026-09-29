@@ -28,10 +28,10 @@
     {
       "id": "portfolio",
       "name": "Personal Portfolio",
-      "description": "Personal website built with semantic HTML and vanilla CSS, plus a small optional JavaScript Secretary interface. Portfolio content remains readable without JavaScript.",
+      "description": "Personal website built with semantic HTML and vanilla CSS, plus a small launcher and optional lazy-loaded AI secretary. Portfolio content remains readable without JavaScript.",
       "technologies": ["HTML", "CSS", "JavaScript", "Cloudflare Pages", "Tor"],
-      "features": ["Public-web deployment and a separately hosted Tor .onion mirror; no mirror address supplied", "Markdown portfolio and machine-readable discovery resources", "Responsive light and dark themes"],
-      "links": [{ "label": "Website", "url": "https://danilostoletovic.com/" }, { "label": "Source", "url": "https://github.com/danilostoletovic/portfolio" }]
+      "features": ["Public-web deployment and a separately hosted Tor .onion mirror", "Markdown portfolio and machine-readable discovery resources", "Responsive light and dark themes"],
+      "links": [{ "label": "Website", "url": "https://danilostoletovic.com/" }, { "label": "Source", "url": "https://github.com/danilostoletovic/portfolio" }, { "label": "Onion mirror (requires Tor)", "url": "http://fpd6sl67nm2xkxcwk3xf6awln77a5t2v7qktnknm24eecpgwaznecgad.onion/" }]
     },
     {
       "id": "secretary",

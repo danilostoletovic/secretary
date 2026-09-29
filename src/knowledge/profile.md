@@ -19,4 +19,4 @@ Public contact and profiles:
 - Upwork: https://www.upwork.com/freelancers/danilostoletovic
 - Fiverr: https://pro.fiverr.com/freelancers/stoletovicd
 
-Use email as the usual direct contact route; supply other profiles or phone when relevant. The blog is inactive. No booking link or .onion address is supplied.
+Use email as the usual direct contact route; supply other profiles or phone when relevant. For a potential project, suggest emailing the goal and scope to discuss fit, pricing, and timing without a purchase commitment. The blog is inactive. No booking link is supplied.
