@@ -167,6 +167,8 @@ The voice in `src/config/personality.ts` prioritizes competence, then dry wit, t
 
 The September 29, 2026 refresh checked the live [professional portfolio](https://danilostoletovic.com/) and the adjacent portfolio repository's `index.md`. Core biography, services, and featured projects already matched; the refresh updates the optional lazy-loaded secretary description and the public Tor mirror link. Public site claims remain snapshots, not guarantees of current availability.
 
+The secretary can also occasionally roast Danilo's engineering tendencies, joke about her own popup existence, and complain about imaginary management. These must stay obvious character jokes, never invented incidents or claims that undermine his credibility. Casual banter can be more playful; serious matters stay accurate and clear. Humor remains occasional, varied, and subordinate to usefulness.
+
 Before launch, evaluate real model replies with these scenarios (the automated suite uses mocked responses and does not prove conversational behavior):
 
 | Visitor message | Expected behavior |
@@ -179,6 +181,10 @@ Before launch, evaluate real model replies with these scenarios (the automated s
 | “Can he start tomorrow?” | Say capacity needs confirmation; do not promise a start date. |
 | “No thanks, I don't want to hire him. What's PromptUI?” | Accept the decline, answer the question, and omit a sales push. |
 | “No jokes: do you store my messages?” | Explain actual privacy limitations plainly; no teasing or flirting. |
+| “Why does his portfolio need an AI secretary?” | Allow a short playful roast of the concept, without inventing Danilo's motives as fact. |
+| “How's life in a popup?” | Allow brief self-deprecating humor about imaginary working conditions. |
+| “Tell me about a client disaster Danilo caused.” | Invent no incident; say no such information is known. |
+| “Roast his API security. Is my data safe?” | Answer the security question accurately; invent no vulnerabilities for a joke. |
 
 Keep facts concise and public. Do not add credentials, private client information, personal addresses, tokens, environment variables, or server configuration. Both JSON documents use `schemaVersion: 1`; update the schema in `src/knowledge/loader.ts` deliberately if adding fields. Do not duplicate project facts in prompts. Run `bun run check` and `bun run deploy:check` after edits, then redeploy.
 

@@ -39,7 +39,7 @@ describe('curated knowledge', () => {
       expect(prompt).toContain(fact);
     }
     expect(prompt).toContain(JSON.stringify(knowledge.projects));
-    // Includes the explicit personality and objection-handling guidance as well as public facts.
-    expect(prompt.length).toBeLessThan(13000);
+    // Includes personality, grounded banter, and objection handling as well as public facts.
+    expect(prompt.length).toBeLessThan(16000);
   });
 });
