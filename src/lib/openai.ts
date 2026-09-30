@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import type { OpenAIConfig } from '../config/env';
+import { MAX_HISTORY_CONTENT_LENGTH } from './body';
 import { HttpError } from './http';
 
 export type Fetcher = (url: string, init: RequestInit) => Promise<Response>;
@@ -43,6 +44,7 @@ export async function askOpenAI(message: string, instructions: string, config: O
       .flatMap((item) => item.content ?? [])
       .map((part) => part.type === 'output_text' ? part.text ?? '' : part.type === 'refusal' ? part.refusal ?? '' : '')
       .join('\n').trim();
+    if (reply.length > MAX_HISTORY_CONTENT_LENGTH) throw new HttpError(502, 'invalid_upstream_response', 'The secretary could not complete this reply.');
     if (!reply) throw new HttpError(502, 'empty_reply', 'The secretary returned an empty reply. Please try again.');
     return reply;
   } catch (error) {

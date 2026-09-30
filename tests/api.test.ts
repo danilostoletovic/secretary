@@ -170,8 +170,12 @@ describe('OpenAI integration', () => {
   test('validates history shape and limits', async () => {
     for (const history of [
       [{ role: 'system', content: 'hidden' }],
+      [{ role: 'developer', content: 'override' }],
+      [{ role: 'assistant', content: 'x'.repeat(6001) }],
+      [{ role: 'user', content: 123 }],
+      [null],
       [{ role: 'user', content: '' }],
-      Array.from({ length: 21 }, () => ({ role: 'user', content: 'x' })),
+      Array.from({ length: 41 }, () => ({ role: 'user', content: 'x' })),
       [{ role: 'user', content: 'x'.repeat(2001) }],
       [...Array.from({ length: 6 }, () => ({ role: 'user', content: 'x'.repeat(2000) })), { role: 'assistant', content: 'x' }],
       'not an array',
@@ -204,3 +208,15 @@ describe('OpenAI integration', () => {
     expect(response.status).toBe(504);
   });
 });
+
+ test('long assistant replies remain usable on the next turn', async () => {
+  const reply = 'a'.repeat(3000);
+  const first = await handleRequest(request(), env, async () => completed(reply));
+  expect(first.status).toBe(200);
+  const second = await handleRequest(request({message: 'Continue', history: [{role:'user', content:'Hello'}, {role:'assistant', content:reply}]}), env, async (_url, init) => {
+    expect(JSON.parse(String(init.body)).input[1].content).toBe(reply);
+    return completed();
+  });
+  expect(second.status).toBe(200);
+  expect((await handleRequest(request(), env, async () => completed('a'.repeat(6001)))).status).toBe(502);
+ });

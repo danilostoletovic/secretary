@@ -9,7 +9,7 @@ import { buildSystemPrompt } from '../lib/prompt';
 const historyMessageSchema = z.object({
   role: z.enum(['user', 'assistant']),
   content: z.string().trim().min(1).max(MAX_HISTORY_CONTENT_LENGTH),
-}).strict();
+}).strict().refine(item => item.role !== 'user' || item.content.length <= MAX_MESSAGE_LENGTH);
 const inputSchema = z.object({
   message: z.string().trim().min(1).max(MAX_MESSAGE_LENGTH),
   history: z.array(historyMessageSchema).max(MAX_HISTORY_MESSAGES).optional(),

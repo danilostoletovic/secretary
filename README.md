@@ -4,7 +4,7 @@
 
 A small, standalone Cloudflare Worker that answers questions about Danilo’s work and portfolio. Built for `danilostoletovic.com`, consumable by any approved website. No frontend, database, conversation storage, or unnecessary filing cabinets.
 
-Each chat request combines separately maintained instructions and curated public knowledge with the visitor’s message, calls OpenAI, and returns a plain-text reply in JSON. Requests are independent: there is no conversation history or ability to send messages or book meetings.
+Each chat request combines separately maintained instructions and curated public knowledge with the visitor’s message, calls OpenAI, and returns a plain-text reply in JSON. Each request supplies its own optional conversation history; no conversation state is shared or stored on the server. The assistant cannot send messages or book meetings.
 
 ## Architecture
 
@@ -235,3 +235,9 @@ wrangler.jsonc             Worker configuration and rate-limit binding
 MIT — see [LICENSE](LICENSE).
 
 Copyright (c) 2026 Danilo Stoletović.
+
+### Browser conversation context
+
+The portfolio sends `{ message, history }`. History contains only user/assistant roles in chronological order; server-controlled instructions remain separate. The browser retains successful turns in sessionStorage, restores them on refresh, and removes them with New chat. Limits: 40 history messages (20 completed turns), 12,000 history characters, 2,000 characters per user message, 6,000 per assistant message, and 16 KiB for the complete UTF-8 JSON body. The frontend drops oldest complete turns to fit; the API rejects invalid or excessive input. OpenAI uses store:false. No cross-visitor memory is created.
+
+Browser integration regression (requires Playwright and installed Edge): set PLAYWRIGHT_PATH to the Playwright module and PORTFOLIO_PATH to the portfolio checkout, then run `bun test ./tests/browser.integration.ts`. Optional BROWSER_CHANNEL selects another installed browser. This exercises the real widget and API with a deterministic mocked model; it does not verify live model reasoning.
