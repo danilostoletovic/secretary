@@ -20,7 +20,7 @@ flowchart LR
     Worker --> Health[GET /health — no OpenAI call]
 ```
 
-TypeScript in strict mode, Cloudflare Workers, Bun, Wrangler, and Zod. Native `fetch` calls the OpenAI Responses API; Zod is the only runtime dependency. The default model is [`gpt-4.1-mini`](https://developers.openai.com/api/docs/models/gpt-4.1-mini), an inexpensive model with low latency suitable for short portfolio questions. Change `OPENAI_MODEL` to another text-capable Responses API model as needed; verify its output-token requirements and behavior before deploying.
+TypeScript in strict mode, Cloudflare Workers, Bun, Wrangler, and Zod. Native `fetch` calls the OpenAI Responses API; Zod is the only runtime dependency. The default model is [`gpt-6.1-sol`](https://developers.openai.com/api/docs/models/gpt-6.1-sol), configured with low reasoning effort for interactive portfolio questions. Change `OPENAI_MODEL` to another text-capable Responses API model as needed; verify its output-token requirements and behavior before deploying.
 
 ## API
 
@@ -106,7 +106,7 @@ Public production settings live in `wrangler.jsonc`. `.dev.vars` overrides varia
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `OPENAI_API_KEY` | Required secret | OpenAI credential; never put it in Wrangler vars or browser code |
-| `OPENAI_MODEL` | `gpt-4.1-mini` | Text-capable Responses API model |
+| `OPENAI_MODEL` | `gpt-6.1-sol` | Text-capable Responses API model |
 | `ALLOWED_ORIGINS` | `https://danilostoletovic.com,https://www.danilostoletovic.com` | Comma-separated exact origins, including scheme and any port; no paths, trailing slash, or wildcard |
 | `OPENAI_TIMEOUT_MS` | `20000` | Upstream timeout, integer 100–60,000 milliseconds |
 | `OPENAI_MAX_OUTPUT_TOKENS` | `400` | Output budget, integer 16–2,000; incomplete replies return 502 |

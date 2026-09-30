@@ -2,6 +2,9 @@ import { HttpError } from './http';
 
 export const MAX_BODY_BYTES = 16384;
 export const MAX_MESSAGE_LENGTH = 2000;
+export const MAX_HISTORY_MESSAGES = 20;
+export const MAX_HISTORY_CONTENT_LENGTH = 2000;
+export const MAX_HISTORY_TOTAL_LENGTH = 12000;
 
 export async function readJson(request: Request): Promise<unknown> {
   if (request.headers.get('content-type')?.split(';')[0]?.trim().toLowerCase() !== 'application/json') {

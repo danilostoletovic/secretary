@@ -25,7 +25,7 @@ export function allowedOrigins(env: Env): string[] {
 
 const schema = z.object({
   OPENAI_API_KEY: z.string().trim().min(1).refine((v) => v !== 'replace-with-your-openai-api-key'),
-  OPENAI_MODEL: z.string().trim().min(1).default('gpt-4.1-mini'),
+  OPENAI_MODEL: z.string().trim().min(1).default('gpt-6.1-sol'),
   OPENAI_TIMEOUT_MS: z.coerce.number().int().min(100).max(60000).default(20000),
   OPENAI_MAX_OUTPUT_TOKENS: z.coerce.number().int().min(16).max(2000).default(400),
 });

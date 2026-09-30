@@ -6,7 +6,7 @@
   "workers_dev": true,
   "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
   "vars": {
-    "OPENAI_MODEL": "gpt-4.1-mini",
+    "OPENAI_MODEL": "gpt-6.1-sol",
     "ALLOWED_ORIGINS": "https://danilostoletovic.com,https://www.danilostoletovic.com",
     "OPENAI_TIMEOUT_MS": "20000",
     "OPENAI_MAX_OUTPUT_TOKENS": "400"

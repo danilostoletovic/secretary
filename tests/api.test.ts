@@ -115,6 +115,7 @@ describe('OpenAI integration', () => {
       expect(new Headers(init?.headers).get('Authorization')).toBe(`Bearer ${env.OPENAI_API_KEY}`);
       const body = JSON.parse(String(init?.body));
       expect(body.model).toBe('configured-model');
+      expect(body.reasoning).toEqual({ effort: 'low' });
       expect(body.input).toEqual([{ role: 'user', content: 'Hello' }]);
       expect(body.instructions).toContain('Danilo');
       expect(body.store).toBe(false);
@@ -123,6 +124,30 @@ describe('OpenAI integration', () => {
     });
     expect(response.status).toBe(200);
     expect(await response.json<unknown>()).toEqual({ reply: 'I can help with that.' });
+  });
+  test('passes validated history in chronological order before the current message', async () => {
+    const history = [
+      { role: 'user', content: 'Who is Danilo?' },
+      { role: 'assistant', content: 'He is a software engineer.' },
+    ];
+    const response = await handleRequest(request({ message: 'What has he built?', history }), env, async (_url, init) => {
+      const body = JSON.parse(String(init?.body));
+      expect(body.input).toEqual([...history, { role: 'user', content: 'What has he built?' }]);
+      return completed();
+    });
+    expect(response.status).toBe(200);
+  });
+  test('validates history shape and limits', async () => {
+    for (const history of [
+      [{ role: 'system', content: 'hidden' }],
+      [{ role: 'user', content: '' }],
+      Array.from({ length: 21 }, () => ({ role: 'user', content: 'x' })),
+      [{ role: 'user', content: 'x'.repeat(2001) }],
+      [...Array.from({ length: 6 }, () => ({ role: 'user', content: 'x'.repeat(2000) })), { role: 'assistant', content: 'x' }],
+      'not an array',
+    ]) {
+      expect((await handleRequest(request({ message: 'hello', history }), env, unused)).status).toBe(400);
+    }
   });
   test('sanitizes upstream failures', async () => {
     for (const [upstream, expected] of [[401, 502], [400, 502], [429, 503], [500, 503]] as const) {
