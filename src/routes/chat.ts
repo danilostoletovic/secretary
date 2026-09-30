@@ -20,6 +20,11 @@ const inputSchema = z.object({
   }
 });
 
+// Client history is conversational data, never authoritative instructions.
+function normalizedHistory(history: z.infer<typeof inputSchema>['history']) {
+  return (history ?? []).map(({ role, content }) => ({ role, content }));
+}
+
 export async function chat(request: Request, env: Env, fetcher: Fetcher): Promise<Response> {
   if (!env.CHAT_RATE_LIMITER) throw new HttpError(503, 'service_unavailable', 'The secretary is not configured yet.');
   let permitted: boolean;
@@ -39,5 +44,5 @@ export async function chat(request: Request, env: Env, fetcher: Fetcher): Promis
   let instructions;
   try { instructions = buildSystemPrompt(await retrieveKnowledge(input.data.message)); }
   catch { throw new HttpError(503, 'service_unavailable', 'The secretary is not configured yet.'); }
-  return json({ reply: await askOpenAI(input.data.message, instructions, config, fetcher, input.data.history) });
+  return json({ reply: await askOpenAI(input.data.message, instructions, config, fetcher, normalizedHistory(input.data.history)) });
 }
