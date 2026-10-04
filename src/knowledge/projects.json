@@ -6,40 +6,40 @@
       "name": "YOLO Smart Vehicle",
       "description": "Smart Vehicle (originally Pametno Vozilo) is an open-source educational and research Edge AI robotics platform powered by Raspberry Pi 5, with on-vehicle YOLO vision and a native Android teleoperation client. Teleoperation and on-device vision are the foundation; more advanced autonomy is on the roadmap.",
       "technologies": ["Python", "Raspberry Pi 5", "YOLO", "Kotlin", "Jetpack Compose", "Docker", "Google ML Kit OCR", "OpenCV", "ONNX Runtime", "TensorFlow Lite", "Bash"],
-      "features": ["Raspberry Pi 5 with 8GB RAM, Pi Camera Module v2, Mecanum wheels, L298N motor drivers, and XL4015 step-down power converter", "Separate camera processing, inference, and motor control using multithreaded pipelines and Docker services", "Native Android client with live video, drive controls, telemetry, and Google ML Kit text recognition; YOLO detection runs on the Pi", "Smart Network monitors connectivity and provides a fallback local hotspot when external Wi-Fi drops", "Model Pipeline optimizes, quantizes, and exports YOLO models for TFLite and ONNX", "4th place and Special Award at the 10th Galaksija Cup National STEM Championship", "MIT-licensed project created by Danilo Stoletović at ETŠ Nikola Tesla in Niš; mentor Predrag Šubarević, former mentor Dejan Batanjac", "LiDAR and SLAM, accessible programming tools, and clearer replication guides are planned directions, not shipped capabilities"],
-      "links": [{ "label": "Project", "url": "https://smartvehicle.dev/" }, { "label": "Android source", "url": "https://github.com/smartvehiclelab/android-client" }, { "label": "GitHub organization", "url": "https://github.com/smartvehiclelab" }, { "label": "RPi Server", "url": "https://github.com/smartvehiclelab/rpi-server" }, { "label": "Smart Network", "url": "https://github.com/smartvehiclelab/smart-network" }, { "label": "Model Pipeline", "url": "https://github.com/smartvehiclelab/model-pipeline" }, { "label": "Web Dashboard", "url": "https://github.com/smartvehiclelab/web-dashboard" }, { "label": "Landing page source", "url": "https://github.com/smartvehiclelab/landing-page" }]
+      "features": ["Raspberry Pi 5 with 8GB RAM, Pi Camera Module v2, Mecanum wheels, L298N motor drivers, and XL4015 step-down power converter","Separate camera processing, inference, and motor control using multithreaded pipelines and Docker services","Native Android client with live video, drive controls, telemetry, and Google ML Kit text recognition; YOLO detection runs on the Pi","Smart Network monitors connectivity and provides a fallback local hotspot when external Wi-Fi drops","Model Pipeline optimizes, quantizes, and exports YOLO models for TFLite and ONNX","4th place and Special Award at the 10th Galaksija Cup National STEM Championship","MIT-licensed project created by Danilo Stoletović at ETŠ Nikola Tesla in Niš; mentor Predrag Šubarević, former mentor Dejan Batanjac","LiDAR and SLAM, accessible programming tools, and clearer replication guides are planned directions, not shipped capabilities"],
+      "links": [{"label":"Project","url":"https://smartvehicle.dev/"},{"label":"Android source","url":"https://github.com/smartvehiclelab/android-client"},{"label":"GitHub organization","url":"https://github.com/smartvehiclelab"},{"label":"RPi Server","url":"https://github.com/smartvehiclelab/rpi-server"},{"label":"Smart Network","url":"https://github.com/smartvehiclelab/smart-network"},{"label":"Model Pipeline","url":"https://github.com/smartvehiclelab/model-pipeline"},{"label":"Web Dashboard","url":"https://github.com/smartvehiclelab/web-dashboard"},{"label":"Landing page source","url":"https://github.com/smartvehiclelab/landing-page"},{"label":"Case study","url":"https://danilostoletovic.com/case-studies/smart-vehicle/"}]
     },
     {
       "id": "class-timetable",
       "name": "Class Timetable",
       "description": "Open-source cross-platform scheduling app for students and educators.",
       "technologies": ["Flutter", "Dart", "Material 3"],
-      "features": ["Academic scheduling across platforms"],
-      "links": [{ "label": "Source", "url": "https://github.com/danilostoletovic/class-timetable" }]
+      "features": ["Academic scheduling across platforms", "One to eight week rotations anchored to a reference start date", "Subject colors, room, teacher, notes, ongoing-class highlighting and local reminders", "JSON backup and restore via files or clipboard; manual transfer rather than cloud sync"],
+      "links": [{ "label": "Source", "url": "https://github.com/danilostoletovic/class-timetable" }, {"label":"Case study","url":"https://danilostoletovic.com/case-studies/class-timetable/"}]
     },
     {
       "id": "promptui",
       "name": "PromptUI",
-      "description": "Lightweight interface for working with AI across different tasks; an evolving experiment currently described as in beta.",
-      "technologies": ["TypeScript"],
-      "features": ["Experimental AI interactions", "In beta"],
-      "links": [{ "label": "Source", "url": "https://github.com/danilostoletovic/PromptUI" }]
+      "description": "Experimental local single-user AI workspace that streams interactive task-shaped interfaces with OpenUI.",
+      "technologies": ["TypeScript", "React", "OpenUI", "Bun", "OpenAI"],
+      "features": ["Streamed tables, charts, forms, and steps with conversational follow-ups", "Source inspection, cancellation, text fallback and interface repair", "Explicit offline demo; session-only chat history; no external tool execution", "In beta"],
+      "links": [{ "label": "Source", "url": "https://github.com/danilostoletovic/PromptUI" }, {"label":"Case study","url":"https://danilostoletovic.com/case-studies/promptui/"}]
     },
     {
       "id": "portfolio",
       "name": "Personal Portfolio",
       "description": "Personal website built with semantic HTML and vanilla CSS, plus a small launcher and optional lazy-loaded AI secretary. Portfolio content remains readable without JavaScript.",
       "technologies": ["HTML", "CSS", "JavaScript", "Cloudflare Pages", "Tor"],
-      "features": ["Public-web deployment and a separately hosted Tor .onion mirror", "Markdown portfolio and machine-readable discovery resources", "Responsive light and dark themes"],
-      "links": [{ "label": "Website", "url": "https://danilostoletovic.com/" }, { "label": "Source", "url": "https://github.com/danilostoletovic/portfolio" }, { "label": "Onion mirror (requires Tor)", "url": "http://fpd6sl67nm2xkxcwk3xf6awln77a5t2v7qktnknm24eecpgwaznecgad.onion/" }]
+      "features": ["Public-web deployment and a separately hosted Tor .onion mirror","Markdown portfolio and machine-readable discovery resources","Responsive light and dark themes","Typography-driven shipping-focused hero; featured work includes actual project screenshots and the Smart Vehicle sketch","Separate case-studies section: Smart Vehicle, Secretary, Class Timetable and PromptUI; mobile development and business website service pages"],
+      "links": [{"label":"Website","url":"https://danilostoletovic.com/"},{"label":"Source","url":"https://github.com/danilostoletovic/portfolio"},{"label":"Onion mirror (requires Tor)","url":"http://fpd6sl67nm2xkxcwk3xf6awln77a5t2v7qktnknm24eecpgwaznecgad.onion/"}]
     },
     {
       "id": "secretary",
       "name": "Secretary",
       "description": "AI assistant integrated with Danilo's portfolio that helps visitors understand his projects, services, technical experience, and whether his skills may fit their project.",
       "technologies": ["TypeScript", "Cloudflare Workers", "OpenAI Responses API", "Bun", "Zod"],
-      "features": ["Portfolio questions and potential-client guidance", "Server-side curated public knowledge", "Stateless chat API; each question is answered independently"],
-      "links": [{ "label": "Portfolio", "url": "https://danilostoletovic.com/" }]
+      "features": ["Portfolio questions and potential-client guidance","Server-side curated public knowledge","Stateless server; each request can supply optional bounded conversation history, and the browser keeps session history"],
+      "links": [{"label":"Portfolio","url":"https://danilostoletovic.com/"},{"label":"Case study","url":"https://danilostoletovic.com/case-studies/secretary/"}]
     }
   ]
 }
