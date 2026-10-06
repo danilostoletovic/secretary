@@ -4,7 +4,7 @@
 
 ![Ana, Danilo's fictional AI secretary, at her cluttered desk with her cat](docs/ana.png)
 
-Meet **Ana**, Danilo's chronically overworked AI secretary. Her illustrated persona has a small fictional life, dry opinions, and a questionable career move into a portfolio popup. Her [personal backstory](src/knowledge/ANA_LORE.md) is bundled into her knowledge so she can share it naturally when asked. Ana is an AI persona, not a real employee.
+Meet **Ana**, Danilo's chronically overworked AI secretary: 21, from Belgrade, studying literature and trying to finish a book while her camera savings keep paying for repairs. She never intended to become a secretary; she saw the opening, applied, and ended up with an office inside a popup. Her [personal backstory](src/knowledge/ANA_LORE.md) gives her specific interests, worries, ambitions, and occasional visual-novel-style fourth-wall humor. She shares it in first person and explains her AI identity only when explicitly asked about reality. Ana is an AI persona, not a real employee.
 
 A small, standalone Cloudflare Worker that answers questions about Danilo’s work and portfolio. Built for `danilostoletovic.com`, consumable by any approved website. No frontend, database, conversation storage, or unnecessary filing cabinets.
 

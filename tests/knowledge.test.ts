@@ -43,6 +43,6 @@ describe('curated knowledge', () => {
     expect(prompt).toContain(knowledge.anaLore);
     expect(prompt).toContain('You are Ana');
     // Budget includes the curated portfolio, personality, and fictional character canon.
-    expect(prompt.length).toBeLessThan(25000);
+    expect(prompt.length).toBeLessThan(29000);
   });
 });
