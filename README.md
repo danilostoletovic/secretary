@@ -16,9 +16,10 @@ Each chat request combines separately maintained instructions and curated public
 flowchart LR
     Website[Portfolio or approved website] --> Worker[Secretary Worker]
     Worker --> Guards[CORS, rate limit, validation]
-    Guards --> Chat[Chat route]
-    Knowledge[Public knowledge + personality] --> Chat
-    Chat --> OpenAI[OpenAI Responses API]
+    Guards --> Chat[Chat HTTP adapter]
+    Chat --> Core[Shared guarded Ana core]
+    Knowledge[Public knowledge + personality] --> Core
+    Core --> OpenAI[OpenAI Responses API]
     OpenAI --> Reply[JSON reply]
     Reply --> Website
     Worker --> Health[GET /health — no OpenAI call]
@@ -38,7 +39,7 @@ Returns HTTP 200 without calling OpenAI or requiring an API key. This is a liven
 
 ### `POST /chat`
 
-Requires `Content-Type: application/json`. Supply exactly one `message` string, containing 1–2,000 characters after trimming (JavaScript UTF-16 length). The entire UTF-8 body is limited to 16 KiB, enforced while reading even without a Content-Length header. Compressed request bodies and extra JSON fields are rejected.
+Requires `Content-Type: application/json`. Supply a `message` string and optional `history` array of strict `{ role: "user" | "assistant", content: string }` records. The message must contain 1–2,000 characters after trimming (JavaScript UTF-16 length). The entire UTF-8 body is limited to 16 KiB, enforced while reading even without a Content-Length header. Compressed request bodies and extra JSON fields are rejected.
 
 ```sh
 curl http://localhost:8787/chat \
@@ -57,7 +58,7 @@ Illustrative response (wording varies):
 Errors have a consistent shape:
 
 ```json
-{ "error": { "code": "invalid_request", "message": "Provide only a message containing 1–2000 characters." } }
+{ "error": { "code": "invalid_request", "message": "Provide a valid message and optional conversation history within the allowed limits." } }
 ```
 
 | Status | Meaning |
@@ -196,16 +197,22 @@ Keep facts concise and public. Do not add credentials, private client informatio
 
 Wrangler bundles Markdown as server-side text modules and JSON as code; these files are not public assets. `getAllKnowledge()` validates the bundled data with Zod on first use and caches an immutable result per Worker instance. Invalid structure fails closed with a sanitized 503 before any OpenAI call. Invalid JSON syntax fails the build. No runtime filesystem or database is needed.
 
-The route calls `retrieveKnowledge(userQuery)` and passes the result to `buildSystemPrompt(knowledge)` in `src/lib/prompt.ts`. The builder combines base scope/capability instructions from `src/config/personality.ts`, explicitly labeled fictional Ana lore, profile, compact JSON services/projects, and policies. The OpenAI client receives these as `instructions`; the visitor message stays in a separate user-role input. The strict API accepts only `message`, never client-supplied knowledge or instructions.
+The shared operation in `src/core/ana.ts` calls `retrieveKnowledge(userQuery)` and passes the result to `buildSystemPrompt(knowledge)` in `src/lib/prompt.ts`. The builder combines base scope/capability instructions from `src/config/personality.ts`, explicitly labeled fictional Ana lore, profile, compact JSON services/projects, and policies. The OpenAI client receives these as `instructions`; the visitor message stays in a separate user-role input. The strict API accepts only `message` and optional `history`, never client-supplied knowledge or instructions.
 
 For future RAG, replace the implementation of `retrieveKnowledge` with query-based selection returning the same `Knowledge` shape. Always retain the trusted profile and policies; only select relevant public facts. Stable record IDs and versioned JSON make migration easier. The HTTP API and OpenAI client need no retrieval-specific changes. There is currently no RAG, embeddings, vector database, or model tool access. Tests verify instruction separation, not a guarantee that a model will resist every prompt injection.
+
+## Internal reuse and future adapters
+
+Read the [backend audit and adapter contract](docs/ANA_BACKEND_AUDIT.md). Future interfaces should call `converseWithAna` in `src/core/ana.ts` directly, using a lazy bounded reader and trusted ingress context. This operation enforces the existing shared rate bucket and normalized limits before building the same prompt and invoking the same model client. No A2A endpoint or Agent Card exists yet.
 
 ## Project structure
 
 ```text
 src/
   index.ts                 Routing, CORS, and safe error boundary
-  routes/chat.ts           Validation and rate limiting
+  routes/chat.ts           Thin HTTP adapter
+  core/ana.ts              Shared guarded conversation operation
+  core/input.ts            Strict normalized input validation
   lib/body.ts              Bounded JSON body reader
   lib/http.ts              JSON errors and security headers
   lib/openai.ts            Responses API call, timeout, and reply parsing

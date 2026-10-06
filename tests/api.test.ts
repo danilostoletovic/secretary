@@ -220,3 +220,19 @@ describe('OpenAI integration', () => {
   expect(second.status).toBe(200);
   expect((await handleRequest(request(), env, async () => completed('a'.repeat(6001)))).status).toBe(502);
  });
+
+test('unexpected failures return safe errors and log only event/status/code', async () => {
+  const logs: unknown[][] = [];
+  const original = console.error;
+  console.error = (...args: unknown[]) => { logs.push(args); };
+  try {
+    const response = await handleRequest(request({ message: 'private visitor text' }), env, async () => {
+      throw new Error('private provider detail unit-test-only-not-a-real-key');
+    });
+    expect(response.status).toBe(502);
+    expect(await response.json<unknown>()).toEqual({ error: {
+      code: 'upstream_error', message: 'The secretary could not complete this request.',
+    } });
+    expect(logs).toEqual([[JSON.stringify({ event: 'request_failed', status: 502, code: 'upstream_error' })]]);
+  } finally { console.error = original; }
+});
