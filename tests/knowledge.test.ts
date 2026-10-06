@@ -19,6 +19,7 @@ describe('curated knowledge', () => {
     for (const source of [
       null,
       { ...valid, policies: ' ' },
+      { ...valid, anaLore: ' ' },
       { ...valid, services: '{malformed private source' },
       { ...valid, services: { schemaVersion: 2, services: valid.services.services } },
       { ...valid, services: { schemaVersion: 1, services: [{ id: 'bad', name: 'private source', description: 'test', available: 'true' }] } },
@@ -39,7 +40,9 @@ describe('curated knowledge', () => {
       expect(prompt).toContain(fact);
     }
     expect(prompt).toContain(JSON.stringify(knowledge.projects));
-    // Includes personality, grounded banter, and objection handling as well as public facts.
-    expect(prompt.length).toBeLessThan(16000);
+    expect(prompt).toContain(knowledge.anaLore);
+    expect(prompt).toContain('You are Ana');
+    // Budget includes the curated portfolio, personality, and fictional character canon.
+    expect(prompt.length).toBeLessThan(25000);
   });
 });

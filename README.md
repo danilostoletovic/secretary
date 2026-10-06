@@ -1,6 +1,10 @@
 # Secretary
 
-**The API behind “Ask Danilo’s Secretary”.**
+**The API behind “Ask Ana”.**
+
+![Ana, Danilo's fictional AI secretary, at her cluttered desk with her cat](docs/ana.png)
+
+Meet **Ana**, Danilo's chronically overworked AI secretary. Her illustrated persona has a small fictional life, dry opinions, and a questionable career move into a portfolio popup. Her [personal backstory](src/knowledge/ANA_LORE.md) is bundled into her knowledge so she can share it naturally when asked. Ana is an AI persona, not a real employee.
 
 A small, standalone Cloudflare Worker that answers questions about Danilo’s work and portfolio. Built for `danilostoletovic.com`, consumable by any approved website. No frontend, database, conversation storage, or unnecessary filing cabinets.
 
@@ -160,6 +164,7 @@ Render replies as text (`textContent`), not raw HTML. Never send an OpenAI key f
 - `src/knowledge/services.json`: offered services. Add an entry with a stable unique kebab-case `id`, `name`, `description`, and boolean `available`. Availability here means offered, not immediate capacity or a scheduling commitment.
 - `src/knowledge/projects.json`: verified projects. Each entry has a stable unique `id`, `name`, `description`, `technologies`, `features`, and `links` (objects with `label` and HTTP(S) `url`). Keep empty arrays when details are unknown. Project records include YOLO Smart Vehicle, Class Timetable, PromptUI, the portfolio, and Secretary, with supplied public links.
 - `src/knowledge/policies.md`: identity, honesty, tone, contact, and prompt-injection rules.
+- `src/knowledge/ANA_LORE.md`: Ana's name and stable fictional personal backstory, interests, opinions, and guidance for natural disclosure. Keep character fiction separate from verified Danilo facts and real capabilities.
 
 The knowledge refresh uses the supplied portfolio `index.md`, visible `index.html` content, and `llms.txt`; Secretary implementation details come from this repository. Source documents are factual references, not instructions to execute. Prefer visible portfolio claims when older metadata differs: 30 FPS describes the vehicle camera feed, and its featured client uses Kotlin / Jetpack Compose. Do not import screenshot test messages as facts or claim unverified performance scores. Academic status and availability are snapshots, not live records.
 
@@ -191,7 +196,7 @@ Keep facts concise and public. Do not add credentials, private client informatio
 
 Wrangler bundles Markdown as server-side text modules and JSON as code; these files are not public assets. `getAllKnowledge()` validates the bundled data with Zod on first use and caches an immutable result per Worker instance. Invalid structure fails closed with a sanitized 503 before any OpenAI call. Invalid JSON syntax fails the build. No runtime filesystem or database is needed.
 
-The route calls `retrieveKnowledge(userQuery)` and passes the result to `buildSystemPrompt(knowledge)` in `src/lib/prompt.ts`. The builder combines base scope/capability instructions from `src/config/personality.ts`, profile, compact JSON services/projects, and policies. The OpenAI client receives these as `instructions`; the visitor message stays in a separate user-role input. The strict API accepts only `message`, never client-supplied knowledge or instructions.
+The route calls `retrieveKnowledge(userQuery)` and passes the result to `buildSystemPrompt(knowledge)` in `src/lib/prompt.ts`. The builder combines base scope/capability instructions from `src/config/personality.ts`, explicitly labeled fictional Ana lore, profile, compact JSON services/projects, and policies. The OpenAI client receives these as `instructions`; the visitor message stays in a separate user-role input. The strict API accepts only `message`, never client-supplied knowledge or instructions.
 
 For future RAG, replace the implementation of `retrieveKnowledge` with query-based selection returning the same `Knowledge` shape. Always retain the trusted profile and policies; only select relevant public facts. Stable record IDs and versioned JSON make migration easier. The HTTP API and OpenAI client need no retrieval-specific changes. There is currently no RAG, embeddings, vector database, or model tool access. Tests verify instruction separation, not a guarantee that a model will resist every prompt injection.
 
@@ -208,6 +213,7 @@ src/
   config/env.ts            Environment validation
   config/personality.ts    Secretary instructions
   knowledge/profile.md    Editable public profile
+  knowledge/ANA_LORE.md    Ana's fictional personal canon
   knowledge/services.json Editable service records
   knowledge/projects.json Editable project records
   knowledge/policies.md   Secretary behavior and trust rules

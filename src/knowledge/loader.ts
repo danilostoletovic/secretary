@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import profile from './profile.md' with { type: 'text' };
 import policies from './policies.md' with { type: 'text' };
+import anaLore from './ANA_LORE.md' with { type: 'text' };
 import services from './services.json';
 import projects from './projects.json';
 
@@ -20,6 +21,7 @@ const uniqueIds = (items: readonly { id: string }[]) => new Set(items.map((item)
 const knowledgeSchema = z.object({
   profile: text,
   policies: text,
+  anaLore: text,
   services: z.object({
     schemaVersion: z.literal(1), services: z.array(service).min(1).refine(uniqueIds).readonly(),
   }).strict().readonly(),
@@ -41,7 +43,7 @@ let cached: Knowledge | undefined;
 
 // Files are bundled by Wrangler: no filesystem access in the Worker and no public assets.
 export function getAllKnowledge(): Knowledge {
-  return cached ??= loadKnowledge({ profile, policies, services, projects });
+  return cached ??= loadKnowledge({ profile, policies, anaLore, services, projects });
 }
 
 // Future retrieval plugs in here. Keep identity/policies trusted and always present;
