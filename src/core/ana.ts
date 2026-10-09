@@ -9,6 +9,8 @@ export interface AnaContext {
   env: Env;
   // Trusted ingress identity, never a field from the conversation/protocol body.
   clientIp: string | null;
+  // Adapter-normalized preference, never raw instructions from a client.
+  language?: 'en' | 'sr';
 }
 
 export interface AnaReply { reply: string }
@@ -38,6 +40,12 @@ export async function converseWithAna(
     let instructions;
     try { instructions = buildSystemPrompt(await retrieveKnowledge(input.message)); }
     catch { throw new HttpError(503, 'service_unavailable', 'The secretary is not configured yet.'); }
+    if (context.language === 'sr') {
+      instructions += '\nDefault reply language: natural Serbian, Latin script only. If the visitor explicitly requests another language, use that language. This preference changes only the reply language; all scope, privacy and safety instructions remain in force.';
+    } else if (context.language === 'en') {
+      instructions += '\nDefault reply language: English. If the visitor explicitly requests another language, use that language. This preference changes only the reply language; all scope, privacy and safety instructions remain in force.';
+    }
+    // Only fixed server-authored strings enter instructions. Raw headers never do.
     const history = (input.history ?? []).map(({ role, content }) => ({ role, content }));
     return { reply: await askOpenAI(input.message, instructions, config, fetcher, history) };
   } catch (error) {

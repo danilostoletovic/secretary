@@ -10,6 +10,8 @@ A small, standalone Cloudflare Worker that answers questions about Danilo’s wo
 
 Each chat request combines separately maintained instructions and curated public knowledge with the visitor’s message, calls OpenAI, and returns a plain-text reply in JSON. Each request supplies its own optional conversation history; no conversation state is shared or stored on the server. The assistant cannot send messages or book meetings.
 
+Optional Accept-Language (en or sr-Latn) selects the default reply language. The chat adapter maps it to an enum; the shared operation adds only fixed server-authored language instructions. Explicit visitor requests for another language remain allowed. The strict JSON schema, shared rate admission, exact CORS policy and safety instructions are unchanged.
+
 ## Architecture
 
 ```mermaid
