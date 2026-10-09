@@ -16,7 +16,7 @@ export async function chat(request: Request, env: Env, fetcher: Fetcher, started
     ...(language ? { language } : {}),
     signal: request.signal,
     startedAt,
-    ...(env.ANA_METRICS === 'true' ? { onMetrics: metrics => console.log(JSON.stringify({ event: 'ana_latency', source: 'web-chat', model: env.OPENAI_MODEL ?? 'gpt-6.1-sol', transport: request.headers.get('Accept')?.includes('text/event-stream') ? 'sse' : 'json', ...metrics })) } : {}),
+    ...(env.ANA_METRICS === 'true' ? { onMetrics: metrics => console.log(JSON.stringify({ event: 'ana_latency', source: 'web-chat', model: env.OPENAI_MODEL ?? 'gpt-6-luna', transport: request.headers.get('Accept')?.includes('text/event-stream') ? 'sse' : 'json', ...metrics })) } : {}),
   };
   // Opt-in transport negotiation; existing API clients keep the JSON contract.
   if (!request.headers.get('Accept')?.split(',').some(value => value.trim().split(';')[0] === 'text/event-stream')) {

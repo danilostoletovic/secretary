@@ -27,7 +27,7 @@ flowchart LR
     Worker --> Health[GET /health — no OpenAI call]
 ```
 
-TypeScript in strict mode, Cloudflare Workers, Bun, Wrangler, and Zod. Native `fetch` calls the OpenAI Responses API; Zod is the only runtime dependency. The default model is [`gpt-6.1-sol`](https://developers.openai.com/api/docs/models/gpt-6.1-sol), configured with low reasoning effort for interactive portfolio questions. Change `OPENAI_MODEL` to another text-capable Responses API model as needed; verify its output-token requirements and behavior before deploying.
+TypeScript in strict mode, Cloudflare Workers, Bun, Wrangler, and Zod. Native `fetch` calls the OpenAI Responses API; Zod is the only runtime dependency. The default model is [`gpt-6-luna`](https://developers.openai.com/api/docs/models/gpt-6-luna), configured with reasoning effort `none` for interactive portfolio questions, selected by the owner. Change `OPENAI_MODEL` to another text-capable Responses API model as needed; verify its output-token requirements and behavior before deploying.
 
 ## API
 
@@ -113,7 +113,7 @@ Public production settings live in `wrangler.jsonc`. `.dev.vars` overrides varia
 | Variable | Default | Purpose |
 | --- | --- | --- |
 | `OPENAI_API_KEY` | Required secret | OpenAI credential; never put it in Wrangler vars or browser code |
-| `OPENAI_MODEL` | `gpt-6.1-sol` | Text-capable Responses API model |
+| `OPENAI_MODEL` | `gpt-6-luna` | Text-capable Responses API model |
 | `ALLOWED_ORIGINS` | `https://danilostoletovic.com,https://www.danilostoletovic.com` | Comma-separated exact origins, including scheme and any port; no paths, trailing slash, or wildcard |
 | `OPENAI_TIMEOUT_MS` | `20000` | Upstream timeout, integer 100–60,000 milliseconds |
 | `OPENAI_MAX_OUTPUT_TOKENS` | `400` | Output budget, integer 16–2,000; incomplete replies return 502 |
@@ -237,7 +237,7 @@ wrangler.jsonc             Worker configuration and rate-limit binding
 
 ## Security and operations
 
-Streaming and latency measurements: see [LATENCY_REVIEW.md](LATENCY_REVIEW.md). Send `Accept: text/event-stream` to opt into `delta`, `done` and sanitized `error` SSE events on the existing `/chat` route. JSON clients remain compatible. `done` carries the final trimmed `reply`; commit only that successful turn. `ANA_METRICS=true` enables content-free server timing/token logs. The current model stays selected pending live benchmark and quality review.
+Streaming and latency measurements: see [LATENCY_REVIEW.md](LATENCY_REVIEW.md). Send `Accept: text/event-stream` to opt into `delta`, `done` and sanitized `error` SSE events on the existing `/chat` route. JSON clients remain compatible. `done` carries the final trimmed `reply`; commit only that successful turn. `ANA_METRICS=true` enables content-free server timing/token logs. Luna is now selected by the owner; live comparative benchmarking and quality review remain pending credentials.
 
 - CORS restricts browser access; it is not authentication and cannot prevent direct HTTP callers from using a public API. No complicated login system is required.
 - Cloudflare’s [native rate limits](https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/) are approximate and local to a Cloudflare location, not a global spending cap. IP-based limits suit this anonymous API but can affect visitors sharing a network and can be bypassed by distributed traffic. Missing IPs share one conservative bucket. Only Cloudflare’s ingress `CF-Connecting-IP` header is used, not client-controlled forwarding headers.

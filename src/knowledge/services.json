@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
   "services": [
-    { "id": "web-development", "name": "Web Development", "description": "Websites and web applications using HTML, CSS, JavaScript, React, and Programmatic SEO where appropriate.", "available": true },
+    { "id": "web-development", "name": "Web Development", "description": "Business websites, landing pages, portfolios and redesigns; responsive design, performance and SEO foundations, hosting/domains/DNS, handover and maintenance options. HTML, CSS, JavaScript and React where appropriate. Small, scoped work can be discussed.", "available": true },
     { "id": "mobile-development", "name": "Android and Cross-Platform Mobile", "description": "Native Android with Kotlin / Jetpack Compose and cross-platform apps with Flutter / Dart, including Google Play publishing.", "available": true },
     { "id": "windows-development", "name": "Windows Desktop Development", "description": "Windows tools with WinUI / C# and cross-platform desktop experience, including Microsoft Store publishing.", "available": true },
     { "id": "apis-backend", "name": "APIs / Backend Development and AI Integration", "description": "Backend systems and APIs using Node.js and Python, with edge deployments; practical AI assistants, API integrations and automation around an agreed workflow. Secretary demonstrates a browser-to-Cloudflare-Worker integration with curated knowledge and server-side credentials; PromptUI demonstrates experimental streamed AI interfaces.", "available": true },
     { "id": "custom-software", "name": "Custom Software / Prototyping", "description": "Software from architecture through implementation and release; computer vision and Raspberry Pi experience demonstrated by YOLO Smart Vehicle.", "available": true },
-    { "id": "systems-deployment", "name": "Systems and Deployment", "description": "Linux, Docker, GitHub Actions, Cloudflare and Vercel delivery; Hetzner Cloud VPS provisioning, networking and troubleshooting.", "available": true },
+    { "id": "systems-deployment", "name": "Systems and Deployment", "description": "Production troubleshooting, deployments and migrations; Linux, Docker, Cloudflare, DNS and networking. GitHub Actions and Vercel delivery; Hetzner Cloud VPS provisioning. Investigate failing infrastructure and make it easier to operate; support scope requires agreement.", "available": true },
     { "id": "engineering-advisory", "name": "Engineering Advisory and Technical Collaboration", "description": "Discuss engineering questions and potential technical collaborations directly with Danilo; scope and terms require confirmation.", "available": true }
   ]
 }

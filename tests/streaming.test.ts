@@ -32,6 +32,8 @@ test('fragmented UTF-8 and CRLF produce incremental replies and private metrics'
   const stream = await streamAna(async () => ({ message: 'Zdravo', history: [{ role: 'assistant', content: 'Ćao' }] }), { env, clientIp: null, onMetrics: value => { metrics = value; } }, async (_, init) => {
     const payload = JSON.parse(String(init.body));
     expect(payload.stream).toBe(true);
+    expect(payload.model).toBe('gpt-6-luna');
+    expect(payload.reasoning).toEqual({ effort: 'none' });
     expect(payload.store).toBe(false);
     expect(payload.instructions).toContain('Ana');
     expect(payload.input[0]).toEqual({ role: 'assistant', content: 'Ćao' });

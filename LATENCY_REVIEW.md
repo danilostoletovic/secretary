@@ -2,6 +2,8 @@
 
 Local and undeployed. Live model selection is pending a locally configured API key.
 
+Owner-directed update, 2026-10-09: the owner subsequently requested Luna. Worker vars, runtime default and telemetry fallback now use `gpt-6-luna` with supported reasoning `none`. This is an explicit selection, not a measured benchmark winner. Comparative live measurements still need credentials. Ana's public knowledge was refreshed from the live portfolio: current headline/navigation, service details, buyer FAQ/process, five-project archive, testimonials and recognition. Personality/lore/security instructions are unchanged. Historical references to retaining Sol below describe the preceding review.
+
 ## Findings and changes
 
 Previously `/chat` waited for the entire Responses API reply and the website rendered it all at once. Visible latency equaled total model response time. `/chat` now negotiates SSE with `Accept: text/event-stream`; other clients retain `{ "reply": "..." }`. One model call, no routing model, retry, public HTTP hop or dependency was added.
