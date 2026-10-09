@@ -9,7 +9,7 @@ export function json(data: unknown, status = 200, headers: HeadersInit = {}): Re
 }
 
 export function secure(response: Response, origin: string | null): Response {
-  response.headers.set('Cache-Control', 'no-store');
+  response.headers.set('Cache-Control', response.headers.get('Content-Type')?.startsWith('text/event-stream') ? 'no-store, no-transform' : 'no-store');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Content-Security-Policy', "default-src 'none'; frame-ancestors 'none'");
   response.headers.set('Referrer-Policy', 'no-referrer');

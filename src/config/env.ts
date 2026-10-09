@@ -6,6 +6,7 @@ export interface Env {
   ALLOWED_ORIGINS?: string;
   OPENAI_TIMEOUT_MS?: string;
   OPENAI_MAX_OUTPUT_TOKENS?: string;
+  ANA_METRICS?: string;
   CHAT_RATE_LIMITER?: Pick<RateLimit, 'limit'>;
 }
 

@@ -1,6 +1,7 @@
 import { parseOpenAIConfig, type Env } from '../config/env';
 import { HttpError } from '../lib/http';
-import { askOpenAI, type Fetcher } from '../lib/openai';
+import { askOpenAI, streamOpenAI, type Fetcher } from '../lib/openai';
+import type { MetricsObserver } from '../lib/metrics';
 import { retrieveKnowledge } from '../knowledge/loader';
 import { buildSystemPrompt } from '../lib/prompt';
 import { validateAnaInput } from './input';
@@ -11,17 +12,19 @@ export interface AnaContext {
   clientIp: string | null;
   // Adapter-normalized preference, never raw instructions from a client.
   language?: 'en' | 'sr';
+  signal?: AbortSignal;
+  onMetrics?: MetricsObserver;
+  startedAt?: number;
 }
 
 export interface AnaReply { reply: string }
 
 // The lazy reader preserves admission BEFORE body parsing for every interface.
 // It must cap the protocol's raw body before decoding/parsing/normalizing it.
-export async function converseWithAna(
+async function prepareAna(
   readInput: () => Promise<unknown>,
   context: AnaContext,
-  fetcher: Fetcher = fetch,
-): Promise<AnaReply> {
+) {
   const { env, clientIp } = context;
   try {
     if (!env.CHAT_RATE_LIMITER) throw new HttpError(503, 'service_unavailable', 'The secretary is not configured yet.');
@@ -47,9 +50,21 @@ export async function converseWithAna(
     }
     // Only fixed server-authored strings enter instructions. Raw headers never do.
     const history = (input.history ?? []).map(({ role, content }) => ({ role, content }));
-    return { reply: await askOpenAI(input.message, instructions, config, fetcher, history) };
+    return { message: input.message, instructions, config, history };
   } catch (error) {
     if (error instanceof HttpError) throw error;
     throw new HttpError(500, 'internal_error', 'An unexpected error occurred.');
   }
+}
+
+export async function converseWithAna(readInput: () => Promise<unknown>, context: AnaContext, fetcher: Fetcher = fetch): Promise<AnaReply> {
+  const startedAt = context.startedAt ?? performance.now();
+  const input = await prepareAna(readInput, context);
+  return { reply: await askOpenAI(input.message, input.instructions, input.config, fetcher, input.history, { ...context, startedAt }) };
+}
+
+export async function streamAna(readInput: () => Promise<unknown>, context: AnaContext, fetcher: Fetcher = fetch) {
+  const startedAt = context.startedAt ?? performance.now();
+  const input = await prepareAna(readInput, context);
+  return streamOpenAI(input.message, input.instructions, input.config, fetcher, input.history, { ...context, startedAt });
 }

@@ -145,7 +145,7 @@ describe('OpenAI integration', () => {
       expect(new Headers(init?.headers).get('Authorization')).toBe(`Bearer ${env.OPENAI_API_KEY}`);
       const body = JSON.parse(String(init?.body));
       expect(body.model).toBe('configured-model');
-      expect(body.reasoning).toEqual({ effort: 'low' });
+      expect(body.reasoning).toBeUndefined(); // Unknown configured models omit unsupported optional parameters.
       expect(body.input).toEqual([{ role: 'user', content: 'Hello' }]);
       expect(body.instructions).toContain('Danilo');
       expect(body.store).toBe(false);

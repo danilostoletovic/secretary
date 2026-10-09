@@ -2,6 +2,8 @@
 
 Audit date: 2026-10-06. Scope: all production source, bundled knowledge/personality, configuration, README, tests and the adjacent portfolio chat client (read-only). No live account configuration, production traffic, secrets or model replies were inspected. No A2A implementation, Agent Card or deployment was created.
 
+2026-10-09 update: this document describes the earlier non-streaming snapshot. The same `/chat` route now supports opt-in SSE through `streamAna`, sharing the same admission and validation as `converseWithAna`. See [latency review](../LATENCY_REVIEW.md) for the current streaming, cancellation and measurement contracts. A2A remains unimplemented.
+
 ## Outcome and current architecture
 
 A minimal extraction was necessary: the prompt builder, knowledge loader and OpenAI client were already separate, but the validated/rate-limited conversation operation was embedded in the HTTP route. `src/core/ana.ts` now provides that operation. `/chat` is a thin HTTP adapter. There is still one prompt builder, one immutable knowledge bundle and one model integration. Personality, knowledge, model, public schemas and response wording instructions are unchanged.

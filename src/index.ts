@@ -4,6 +4,7 @@ import { chat } from './routes/chat';
 import type { Fetcher } from './lib/openai';
 
 export async function handleRequest(request: Request, env: Env, fetcher: Fetcher = fetch): Promise<Response> {
+  const startedAt = performance.now();
   let corsOrigin: string | null = null;
   try {
     const pathname = new URL(request.url).pathname;
@@ -30,7 +31,7 @@ export async function handleRequest(request: Request, env: Env, fetcher: Fetcher
       } }), corsOrigin);
     }
     if (request.method !== method) throw new HttpError(405, 'method_not_allowed', 'Method not allowed.', { Allow: `${method}, OPTIONS` });
-    const response = pathname === '/health' ? json({ status: 'ok', service: 'secretary' }) : await chat(request, env, fetcher);
+    const response = pathname === '/health' ? json({ status: 'ok', service: 'secretary' }) : await chat(request, env, fetcher, startedAt);
     return secure(response, corsOrigin);
   } catch (error) {
     const safe = error instanceof HttpError ? error : new HttpError(500, 'internal_error', 'An unexpected error occurred.');
