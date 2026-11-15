@@ -2,4 +2,4 @@
 OPENAI_API_KEY="replace-with-your-openai-api-key"
 ANA_METRICS="true"
 # Include the exact origin/port used by your local website.
-ALLOWED_ORIGINS="http://localhost:3000,http://localhost:5173,https://danilostoletovic.com,https://www.danilostoletovic.com"
+ALLOWED_ORIGINS="http://localhost:8787,http://127.0.0.1:8787,http://localhost:3000,http://localhost:5173,https://danilostoletovic.github.io,https://danilostoletovic.com,https://www.danilostoletovic.com"

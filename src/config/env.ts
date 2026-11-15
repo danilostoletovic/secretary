@@ -19,7 +19,7 @@ const origin = z.string().refine((value) => {
 
 export function allowedOrigins(env: Env): string[] {
   return z.array(origin).min(1).parse(
-    (env.ALLOWED_ORIGINS ?? 'https://danilostoletovic.com,https://www.danilostoletovic.com')
+    (env.ALLOWED_ORIGINS ?? 'https://danilostoletovic.github.io,https://danilostoletovic.com,https://www.danilostoletovic.com')
       .split(',').map((value) => value.trim()),
   );
 }

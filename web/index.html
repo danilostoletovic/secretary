@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="ana-api-origin" content="">
+  <meta name="description" content="Chat with Ana, Danilo Stoletović’s AI secretary.">
+  <meta name="theme-color" content="#212121">
+  <title>Ana · Secretary</title>
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./chat.js"></script>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand"><img src="./ana.png" alt="" width="33" height="33"><span>Ana<span class="brand-detail">Secretary</span></span></div>
+      <button type="button" id="new-chat" class="new-chat">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg> New chat
+      </button>
+      <nav aria-label="Chats"><h2>Recent chats</h2><div id="history"></div></nav>
+      <a class="source" href="https://github.com/danilostoletovic/secretary">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 6-6 6 6 6m8-12 6 6-6 6m-2-15-4 18"/></svg> View source
+      </a>
+    </aside>
+    <button id="backdrop" type="button" aria-label="Close chat history" hidden></button>
+    <main>
+      <header>
+        <button id="toggle-sidebar" type="button" class="icon-button" aria-label="Toggle chat history" aria-controls="sidebar" aria-expanded="true">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg>
+        </button>
+        <span>Ana</span>
+      </header>
+      <div class="workspace" id="workspace">
+        <div class="scroll-area" id="scroll-area">
+          <section class="welcome" id="welcome">
+            <img src="./ana.png" alt="" width="72" height="72">
+            <h1>How can I help?</h1>
+            <p>I’m Ana, Danilo’s AI secretary.</p>
+          </section>
+          <section id="messages" aria-label="Conversation" hidden></section>
+        </div>
+        <div class="compose-area">
+          <div class="suggestions" id="suggestions" aria-label="Suggested questions">
+            <button type="button" data-prompt="Tell me about Danilo’s projects.">Explore projects</button>
+            <button type="button" data-prompt="What services does Danilo offer?">Ask about services</button>
+            <button type="button" data-prompt="Tell me a little about yourself, Ana.">Meet Ana</button>
+          </div>
+          <p class="error" id="error" role="alert" hidden></p>
+          <form id="composer">
+            <textarea id="message" rows="1" maxlength="2000" aria-label="Message Ana" placeholder="Message Ana"></textarea>
+            <button type="submit" id="send" aria-label="Send message" title="Send message" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
+            </button>
+            <button type="button" id="stop" aria-label="Stop response" title="Stop response" hidden>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="8" height="8" rx="1" fill="currentColor"/></svg>
+            </button>
+          </form>
+          <p class="disclaimer">Ana is an AI and can make mistakes.</p>
+          <p class="sr-only" id="status" role="status"></p>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

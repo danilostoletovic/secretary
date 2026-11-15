@@ -4,10 +4,11 @@
   "main": "src/index.ts",
   "compatibility_date": "2026-09-28",
   "workers_dev": true,
+  "assets": { "directory": "./web", "run_worker_first": ["/chat", "/health"] },
   "rules": [{ "type": "Text", "globs": ["**/*.md"], "fallthrough": true }],
   "vars": {
     "OPENAI_MODEL": "gpt-6-luna",
-    "ALLOWED_ORIGINS": "https://danilostoletovic.com,https://www.danilostoletovic.com",
+    "ALLOWED_ORIGINS": "https://danilostoletovic.github.io,https://danilostoletovic.com,https://www.danilostoletovic.com",
     "OPENAI_TIMEOUT_MS": "20000",
     "OPENAI_MAX_OUTPUT_TOKENS": "400",
     "ANA_METRICS": "true"

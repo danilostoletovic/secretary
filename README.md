@@ -1,12 +1,12 @@
 # Secretary
 
-**The API behind “Ask Ana”.**
+**[Chat with Ana](https://danilostoletovic.github.io/secretary/)**
 
-![Ana, Danilo's fictional AI secretary, at her cluttered desk with her cat](docs/ana.png)
+![Ana, Danilo's fictional AI secretary, at her cluttered desk with her cat](web/ana.png)
 
 Meet **Ana**, Danilo's chronically overworked AI secretary: 21, from Belgrade, studying literature and trying to finish a book while her camera savings keep paying for repairs. She never intended to become a secretary; she saw the opening, applied, and ended up with an office inside a popup. Her [personal backstory](src/knowledge/ANA_LORE.md) gives her specific interests, worries, ambitions, and occasional visual-novel-style fourth-wall humor. She shares it in first person and explains her AI identity only when explicitly asked about reality. Ana is an AI persona, not a real employee.
 
-A small, standalone Cloudflare Worker that answers questions about Danilo’s work and portfolio. Built for `danilostoletovic.com`, consumable by any approved website. No frontend, database, conversation storage, or unnecessary filing cabinets.
+Ana’s standalone chat is published to GitHub Pages by GitHub Actions. The Cloudflare Worker answers questions about Danilo’s work and portfolio. The chat streams replies and saves recent conversations in the current browser. OpenAI credentials and model calls stay in the Worker.
 
 Each chat request combines separately maintained instructions and curated public knowledge with the visitor’s message, calls OpenAI, and returns a plain-text reply in JSON. Each request supplies its own optional conversation history; no conversation state is shared or stored on the server. The assistant cannot send messages or book meetings.
 
@@ -16,13 +16,13 @@ Optional Accept-Language (en or sr-Latn) selects the default reply language. The
 
 ```mermaid
 flowchart LR
-    Website[Portfolio or approved website] --> Worker[Secretary Worker]
+    Website[GitHub Pages chat or approved website] --> Worker[Secretary Worker]
     Worker --> Guards[CORS, rate limit, validation]
     Guards --> Chat[Chat HTTP adapter]
     Chat --> Core[Shared guarded Ana core]
     Knowledge[Public knowledge + personality] --> Core
     Core --> OpenAI[OpenAI Responses API]
-    OpenAI --> Reply[JSON reply]
+    OpenAI --> Reply[Streaming or JSON reply]
     Reply --> Website
     Worker --> Health[GET /health — no OpenAI call]
 ```
@@ -94,7 +94,7 @@ In PowerShell, use `Copy-Item .dev.vars.example .dev.vars` instead. Edit `.dev.v
 bun run dev
 ```
 
-Wrangler serves at `http://localhost:8787` and emulates the rate-limit binding locally. `/health` works without a key; `/chat` needs a real key and sends real, billable OpenAI requests. Local development does not use a fake model. The automated tests mock OpenAI and need no credentials.
+Open `http://localhost:8787` to use the chat. Wrangler serves the frontend and API together and emulates the rate-limit binding locally. `/health` works without a key; `/chat` needs a real key and sends real, billable OpenAI requests. The automated tests mock OpenAI and need no credentials.
 
 ```sh
 bun run typecheck
@@ -114,12 +114,18 @@ Public production settings live in `wrangler.jsonc`. `.dev.vars` overrides varia
 | --- | --- | --- |
 | `OPENAI_API_KEY` | Required secret | OpenAI credential; never put it in Wrangler vars or browser code |
 | `OPENAI_MODEL` | `gpt-6-luna` | Text-capable Responses API model |
-| `ALLOWED_ORIGINS` | `https://danilostoletovic.com,https://www.danilostoletovic.com` | Comma-separated exact origins, including scheme and any port; no paths, trailing slash, or wildcard |
+| `ALLOWED_ORIGINS` | `https://danilostoletovic.github.io,https://danilostoletovic.com,https://www.danilostoletovic.com` | Comma-separated exact origins, including scheme and any port; no paths, trailing slash, or wildcard |
 | `OPENAI_TIMEOUT_MS` | `20000` | Upstream timeout, integer 100–60,000 milliseconds |
 | `OPENAI_MAX_OUTPUT_TOKENS` | `400` | Output budget, integer 16–2,000; incomplete replies return 502 |
 | `ANA_METRICS` | Enabled in checked-in Worker vars | Exact `true` enables content-free timings/token logs; otherwise disabled |
 
 The body and message limits are constants in `src/lib/body.ts`. The native `CHAT_RATE_LIMITER` binding allows 10 attempts per IP per 60 seconds, including malformed chat requests. Configure its `simple.limit`, `simple.period` (10 or 60 seconds), and `namespace_id` in `wrangler.jsonc`. Choose a namespace ID unique within your Cloudflare account unless sharing counters is intentional. A missing or failing binding returns 503 instead of permitting unlimited paid calls.
+
+## Publish the chat to GitHub Pages
+
+1. Deploy the Worker with the configuration below. Confirm its HTTPS origin returns 200 at `/health` and allows requests from `https://danilostoletovic.github.io`.
+2. In **Settings → Secrets and variables → Actions → Variables**, set `ANA_API_ORIGIN` to the Worker’s HTTPS origin, for example `https://secretary.<your-subdomain>.workers.dev`. Use the origin without a trailing slash or `/chat`. Keep the API key in the Worker.
+3. Set **Settings → Pages → Source** to **GitHub Actions**. The Pages workflow runs on pushes to `main` and can also be run manually. Rerun it after changing the API origin.
 
 ## Deploy to Cloudflare
 
